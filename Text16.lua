@@ -1,6 +1,5 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 
 -- CONFIG
@@ -23,15 +22,18 @@ local function HasKnife()
 end
 
 local function EquipKnife()
-    local knife = LocalPlayer.Backpack:FindFirstChild("Knife") or (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Knife"))
+    local character = LocalPlayer.Character
+    if not character then return end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+
+    local knife = LocalPlayer.Backpack:FindFirstChild("Knife") 
+        or character:FindFirstChild("Knife")
+
     if knife then
-        knife.Parent = LocalPlayer.Character
-        LocalPlayer.Character.Humanoid:EquipTool(knife)
-        -- Simula click en el centro de la pantalla
-        local mouseX = workspace.CurrentCamera.ViewportSize.X / 2
-        local mouseY = workspace.CurrentCamera.ViewportSize.Y / 2
-        VirtualInputManager:SendMouseButtonEvent(mouseX, mouseY, 0, true, LocalPlayer, 0)
-        VirtualInputManager:SendMouseButtonEvent(mouseX, mouseY, 0, false, LocalPlayer, 0)
+        humanoid:EquipTool(knife)
+        knife:Activate() -- Activa la tool sin simular click
     end
 end
 
